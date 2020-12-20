@@ -114,11 +114,18 @@ class SensorApiView(APIView):
     def on_log(mqttc, obj, level, string):
         print(string)
 
-    mqttc = mqtt.Client()   
+    def on_disconnect(mqttc, userdata, rc):
+        print("disconnecting reason  "  +str(rc))
+        mqttc.connected_flag=False
+        mqttc.disconnect_flag=True
+
+    mqtt.Client.connected_flag=False
+    mqttc = mqtt.Client()
     mqttc.on_message = on_message
     mqttc.on_connect = on_connect
     mqttc.on_publish = on_publish
     mqttc.on_subscribe = on_subscribe
+    mqttc.on_disconnect = on_disconnect
     print(mqttc.connect(HOST_URL,HOST_PORT,KEEP_ALIVE))
     print(mqttc.subscribe(TOPIC, 0))
 
