@@ -1,0 +1,1 @@
+web: gunicorn lable_studio_python.wsgi
