@@ -14,6 +14,10 @@ from .models import Question
 
 from . import serializers
 
+import paho.mqtt.client as mqtt 
+    
+import json
+
 
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
@@ -72,6 +76,52 @@ class SensorApiView(APIView):
 
     # serializer_class = serializers.HelloSerializer
 
+    
+
+    HOST_URL = "broker.emqx.io"
+    HOST_PORT = 1883
+    KEEP_ALIVE = 60 
+    TOPIC = "linhnv/gyro"
+    SAVED_LOGS_PATH = ""
+
+    IS_RECORD = False
+    """
+    KEEP_ALIVE : Maximum period in seconds between communications with the
+            broker. If no other messages are being exchanged, this controls the
+            rate at which the client will send ping messages to the broker.
+    """
+
+    def on_connect(mqttc, obj, flags, rc):
+        print("rc: "+str(rc))
+        if rc==0:
+            mqttc.connected_flag=True #set flag
+            print("connected OK")
+        else:
+            print("Bad connection Returned code=",rc)
+            mqttc.bad_connection_flag=True
+
+        
+
+    def on_message(mqttc, obj, msg):
+        print(msg.topic+" "+str(msg.qos)+" "+str(msg.payload))
+
+    def on_publish(mqttc, obj, mid):
+        print("mid: "+str(mid))
+
+    def on_subscribe(mqttc, obj, mid, granted_qos):
+        print("Subscribed: "+str(mid)+" "+str(granted_qos))
+
+    def on_log(mqttc, obj, level, string):
+        print(string)
+
+    mqttc = mqtt.Client()   
+    mqttc.on_message = on_message
+    mqttc.on_connect = on_connect
+    mqttc.on_publish = on_publish
+    mqttc.on_subscribe = on_subscribe
+    print(mqttc.connect(HOST_URL,HOST_PORT,KEEP_ALIVE))
+    print(mqttc.subscribe(TOPIC, 0))
+
     def get(self, request, format=None):
         """Return a list of APIView features"""
 
@@ -96,8 +146,14 @@ class SensorApiView(APIView):
         z = request.data.get('z')
 
         message = f'time: {time}, x: {x}, y: {y}, z: {z}'
+        message = json.dumps(message)
+        if not self.mqttc.connected_flag: #wait in loop
+            self.mqttc.connect(self.HOST_URL, self.HOST_PORT, self.KEEP_ALIVE)
+            self.mqttc.subscribe(self.TOPIC, 0)
+
+        self.mqttc.publish(self.TOPIC,message)
         print(f"[INFO] Received message: {message}")
 
-        return Response({'message':message})
+        return Response({'message':message, "is_connected":self.mqttc.connected_flag})
     
         

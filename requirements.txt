@@ -10,12 +10,13 @@ django-storages==1.11
 djangorestframework 
 gunicorn==20.0.4
 jmespath==0.10.0
+paho-mqtt==1.5.0
 Pillow==8.0.1
-psycopg2 
+psycopg2
 python-dateutil==2.8.1
 pytz==2020.1
 s3transfer==0.3.3
 six==1.15.0
-sqlparse 
+sqlparse
 urllib3==1.26.2
 whitenoise==5.2.0
