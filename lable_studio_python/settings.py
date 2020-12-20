@@ -27,7 +27,10 @@ SECRET_KEY = 'i4$&jk!*)fybi&9futjwq#yv(3$8g@(_2!g3!0cg#f(qaqt&m+'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['https://label-studio-testing-17020860.herokuapp.com/',
+'localhost',
+'127.0.0.1'
+]
 
 
 # Application definition
