@@ -81,7 +81,7 @@ class SensorApiView(APIView):
     HOST_URL = "broker.emqx.io"
     HOST_PORT = 1883
     KEEP_ALIVE = 60 
-    TOPIC = "linhnv/gyro"
+    TOPIC = "linhnv/gyro/android/1"
     SAVED_LOGS_PATH = ""
 
     IS_RECORD = False
